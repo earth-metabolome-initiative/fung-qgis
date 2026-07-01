@@ -15,10 +15,19 @@ def test_qgis_project_uses_fung_sample_id_convention() -> None:
     assert "DCIM/manaslu" not in qgs
 
 
-def test_qgis_project_has_only_google_map_layer() -> None:
+def test_qgis_project_uses_offline_neuchatel_map_layers() -> None:
     qgs = (PROJECT_ROOT / "qgis/fung/fung.qgs").read_text(encoding="utf-8")
 
-    assert 'name="google-satellite"' in qgs
-    assert "basemap.mbtiles" not in qgs
-    assert "optimized_maps" not in qgs
+    assert 'name="neuchatel_basemap"' in qgs
+    assert 'name="neuchatel_canton"' in qgs
+    assert "neuchatel_basemap.mbtiles" in qgs
+    assert "neuchatel_canton.gpkg" in qgs
+    assert "\"optimized_maps\": true" in qgs
+    assert "mt1.google.com" not in qgs
     assert "Fung-EMI" not in qgs
+
+
+def test_offline_basemap_stays_under_500_mb() -> None:
+    mbtiles = PROJECT_ROOT / "qgis/fung/optimized_maps/neuchatel_basemap.mbtiles"
+
+    assert mbtiles.stat().st_size < 500 * 1024 * 1024

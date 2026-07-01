@@ -4,7 +4,7 @@ Project code: `fung`
 
 This repository contains the QGIS/QField collection project for the UniNe fungi
 collection program. The project is centered on Neuchatel, Switzerland, and uses
-an online Google satellite XYZ layer only.
+an offline basemap generated from Swiss official geo.admin.ch services.
 
 ## Main files
 
@@ -13,6 +13,8 @@ an online Google satellite XYZ layer only.
 - Species lookup: `qgis/fung/species_list.gpkg`
 - Collector lookup: `qgis/fung/collector_list.gpkg`
 - Observation subject lookup: `qgis/fung/observation_subject.gpkg`
+- Canton polygon: `qgis/fung/optimized_maps/neuchatel_canton.gpkg`
+- Offline basemap: `qgis/fung/optimized_maps/neuchatel_basemap.mbtiles`
 
 ## QField conventions
 
@@ -22,6 +24,51 @@ an online Google satellite XYZ layer only.
 - QField image paths are generated from the sample identifier only, for example
   `DCIM/fung/fung_000001_01.jpg`.
 - `uuid_qfield` is generated automatically with QGIS `uuid('WithoutBraces')`.
+
+## Offline basemap
+
+The QField app did not load the online Google Earth/Google satellite layer
+reliably, so the project now uses a local MBTiles basemap.
+
+- Boundary source: geo.admin.ch identify endpoint, layer
+  `ch.swisstopo.swissboundaries3d-kanton-flaeche.fill`, point inside Neuchatel.
+- Basemap source: geo.admin.ch WMTS/XYZ, layer `ch.swisstopo.pixelkarte-farbe`.
+- Output: JPEG MBTiles at 5 m source resolution with lower-zoom overviews.
+- Current file size: about 58 MB, below the 500 MB target.
+
+Regenerate the canton polygon and basemap:
+
+```bash
+mkdir -p qgis/fung/optimized_maps
+
+curl -L --fail \
+  "https://api3.geo.admin.ch/rest/services/ech/MapServer/identify?geometry=6.93,46.99&geometryType=esriGeometryPoint&layers=all:ch.swisstopo.swissboundaries3d-kanton-flaeche.fill&tolerance=0&returnGeometry=true&geometryFormat=geojson&sr=4326&lang=en&limit=10" \
+  --output qgis/fung/optimized_maps/neuchatel_canton_identify.json
+
+jq '{type:"FeatureCollection", features:.results}' \
+  qgis/fung/optimized_maps/neuchatel_canton_identify.json \
+  > qgis/fung/optimized_maps/neuchatel_canton.geojson
+
+ogr2ogr -f GPKG \
+  qgis/fung/optimized_maps/neuchatel_canton.gpkg \
+  qgis/fung/optimized_maps/neuchatel_canton.geojson \
+  -nln neuchatel_canton -overwrite
+
+gdalwarp -overwrite -of GTiff \
+  -t_srs EPSG:3857 \
+  -te 716255.65 5917003.10 788915.67 5969319.94 \
+  -tr 5 5 -r bilinear \
+  -co TILED=YES -co COMPRESS=JPEG -co JPEG_QUALITY=85 \
+  "WMTS:https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml,layer=ch.swisstopo.pixelkarte-farbe" \
+  /tmp/neuchatel_pixelkarte_5m.tif
+
+gdal_translate -of MBTILES \
+  -co TILE_FORMAT=JPEG -co QUALITY=85 \
+  /tmp/neuchatel_pixelkarte_5m.tif \
+  qgis/fung/optimized_maps/neuchatel_basemap.mbtiles
+
+gdaladdo -r average qgis/fung/optimized_maps/neuchatel_basemap.mbtiles 2 4 8
+```
 
 ## Taxonomic resolution
 
@@ -91,4 +138,6 @@ uv run pytest
 uv run ruff check .
 ogrinfo -so qgis/fung/observations.gpkg observations
 ogrinfo -so qgis/fung/species_list.gpkg species_list
+ogrinfo -so qgis/fung/optimized_maps/neuchatel_canton.gpkg neuchatel_canton
+gdalinfo qgis/fung/optimized_maps/neuchatel_basemap.mbtiles
 ```

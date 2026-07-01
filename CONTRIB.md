@@ -1,17 +1,24 @@
 # Contributing to the Fung QField Project
 
-## Project map
+## Project Map
 
-The QGIS project is centered on Neuchatel and keeps only one online map layer:
-Google satellite XYZ tiles. There is no offline MBTiles basemap and no project
-polygon layer in this first `fung` version.
+The QGIS project is centered on Neuchatel and uses an offline Swiss official
+topographic basemap. The former online Google satellite layer was removed
+because it did not load reliably in the QField app.
 
 Open `qgis/fung/fung.qgs` in QGIS and confirm:
 
 - `observations` is the active editable point layer.
 - `species_list`, `collector_list`, and `observation_subject` are lookup layers.
-- `google-satellite` is the only layer in the `map` group.
+- `neuchatel_canton` and `neuchatel_basemap` are the layers in the `map` group.
 - Sample IDs validate as `fung_######`.
+
+The offline files live in `qgis/fung/optimized_maps/`:
+
+- `neuchatel_canton.gpkg`: official canton polygon from
+  `ch.swisstopo.swissboundaries3d-kanton-flaeche.fill`.
+- `neuchatel_basemap.mbtiles`: `ch.swisstopo.pixelkarte-farbe` rendered to
+  MBTiles, currently about 58 MB.
 
 ## Rebuilding taxa
 
@@ -32,5 +39,5 @@ Recommended export directory:
 ```
 
 When packaging with QFieldSync, include the GeoPackage lookup tables and the
-`DCIM/fung` attachment folder convention. Do not create an offline basemap for
-this project unless the map policy changes.
+`DCIM/fung` attachment folder convention. `optimized_maps` must be copied so the
+local MBTiles and canton polygon are available on the device.
