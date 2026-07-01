@@ -1,0 +1,18 @@
+iNaturalist species counts for the fung collection project
+created_at_utc=2026-07-01T18:53:27.050563+00:00
+source=pyinaturalist.get_observation_species_counts
+place_id=7236
+country_code=CH
+country_name=Switzerland
+bbox_swlat=
+bbox_swlng=
+bbox_nelat=
+bbox_nelng=
+quality_grade=any
+iconic_taxa=
+taxon_id=211194
+taxon_name=Tracheophyta
+per_page=200
+max_pages=
+row_count=5905
+note=The default query uses a Neuchatel bounding box. Country queries use iNaturalist place IDs. Taxon-name queries are resolved through iNaturalist.
