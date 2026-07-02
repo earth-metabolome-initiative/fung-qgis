@@ -21,7 +21,8 @@ Manaslu reference project.
 For Swiss projects, prefer geo.admin.ch sources when possible:
 
 - Use `ch.swisstopo.swissboundaries3d-kanton-flaeche.fill` for canton polygons.
-- Use `ch.swisstopo.pixelkarte-farbe` for compact topographic MBTiles.
+- Use `ch.swisstopo.swissimage` for aerial/orthophoto MBTiles when field visual
+  context matters.
 - Keep offline basemaps below 500 MB and add lower-zoom overviews.
 
 For the future git-versioned template, parameterize: project code, sample ID

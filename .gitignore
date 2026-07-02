@@ -1,5 +1,31 @@
+# Python / tooling
 __pycache__/
+*.py[cod]
 .pytest_cache/
 .ruff_cache/
 .venv/
-*.pyc
+
+# OS / editor
+.DS_Store
+*.swp
+*.swo
+
+# QGIS / QField transient files
+*.qgs~
+*.qgz~
+*.gpkg-shm
+*.gpkg-wal
+qgis/**/.qfieldsync/
+qgis/**/QField/export/
+qgis/**/*_attachments.zip
+qgis/**/*.mbtiles
+
+# Field photos and downloaded media
+qgis/**/DCIM/
+qgis/**/attachments/
+qgis/**/photos/
+qgis/**/Pictures/
+qgis/**/downloads/
+data/raw_media/
+data/downloads/
+data/photos/

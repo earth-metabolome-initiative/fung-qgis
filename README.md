@@ -32,9 +32,9 @@ reliably, so the project now uses a local MBTiles basemap.
 
 - Boundary source: geo.admin.ch identify endpoint, layer
   `ch.swisstopo.swissboundaries3d-kanton-flaeche.fill`, point inside Neuchatel.
-- Basemap source: geo.admin.ch WMTS/XYZ, layer `ch.swisstopo.pixelkarte-farbe`.
-- Output: JPEG MBTiles at 5 m source resolution with lower-zoom overviews.
-- Current file size: about 58 MB, below the 500 MB target.
+- Basemap source: geo.admin.ch WMTS/XYZ, layer `ch.swisstopo.swissimage`.
+- Output: JPEG MBTiles at 2.5 m source resolution with lower-zoom overviews.
+- Current file size: about 147 MB, below the 500 MB target.
 
 Regenerate the canton polygon and basemap:
 
@@ -57,14 +57,14 @@ ogr2ogr -f GPKG \
 gdalwarp -overwrite -of GTiff \
   -t_srs EPSG:3857 \
   -te 716255.65 5917003.10 788915.67 5969319.94 \
-  -tr 5 5 -r bilinear \
-  -co TILED=YES -co COMPRESS=JPEG -co JPEG_QUALITY=85 \
-  "WMTS:https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml,layer=ch.swisstopo.pixelkarte-farbe" \
-  /tmp/neuchatel_pixelkarte_5m.tif
+  -tr 2.5 2.5 -r bilinear \
+  -co TILED=YES -co COMPRESS=JPEG -co JPEG_QUALITY=75 \
+  "WMTS:https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml,layer=ch.swisstopo.swissimage" \
+  /tmp/neuchatel_swissimage_2_5m.tif
 
 gdal_translate -of MBTILES \
-  -co TILE_FORMAT=JPEG -co QUALITY=85 \
-  /tmp/neuchatel_pixelkarte_5m.tif \
+  -co TILE_FORMAT=JPEG -co QUALITY=75 \
+  /tmp/neuchatel_swissimage_2_5m.tif \
   qgis/fung/optimized_maps/neuchatel_basemap.mbtiles
 
 gdaladdo -r average qgis/fung/optimized_maps/neuchatel_basemap.mbtiles 2 4 8

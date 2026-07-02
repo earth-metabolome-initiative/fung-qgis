@@ -3,7 +3,7 @@
 ## Project Map
 
 The QGIS project is centered on Neuchatel and uses an offline Swiss official
-topographic basemap. The former online Google satellite layer was removed
+SWISSIMAGE aerial basemap. The former online Google satellite layer was removed
 because it did not load reliably in the QField app.
 
 Open `qgis/fung/fung.qgs` in QGIS and confirm:
@@ -17,8 +17,8 @@ The offline files live in `qgis/fung/optimized_maps/`:
 
 - `neuchatel_canton.gpkg`: official canton polygon from
   `ch.swisstopo.swissboundaries3d-kanton-flaeche.fill`.
-- `neuchatel_basemap.mbtiles`: `ch.swisstopo.pixelkarte-farbe` rendered to
-  MBTiles, currently about 58 MB.
+- `neuchatel_basemap.mbtiles`: `ch.swisstopo.swissimage` rendered to
+  MBTiles, currently about 147 MB.
 
 ## Rebuilding taxa
 
